@@ -1,0 +1,565 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>zadatak1_bonus_PO</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-02-04"><meta name="DC.source" content="zadatak1_bonus_PO.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Ucitavanje</a></li><li><a href="#2">Dobijanje obele&#382;ja</a></li><li><a href="#3">Standardizacija</a></li><li><a href="#4">Redukcija dimenzija na bazi matrice rasejanja</a></li><li><a href="#5">Test vi&#353;e hipoteza minimalne verovatno&#263;e gre&#353;ke</a></li><li><a href="#6">Makaze i kamen su najseparabilnije</a></li><li><a href="#7">Prikaz koraka u obradi slike</a></li><li><a href="#8">Funkcija za prikaz obrade slike</a></li><li><a href="#9">Funkcija za obradu slike</a></li></ul></div><h2 id="1">Ucitavanje</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc
+
+rockPath = <span class="string">'signs/rock'</span>;
+paperPath = <span class="string">'signs/paper'</span>;
+scissorsPath = <span class="string">'signs/scissors'</span>;
+
+rockFiles = dir(fullfile(rockPath, <span class="string">'*.png'</span>));
+paperFiles = dir(fullfile(paperPath, <span class="string">'*.png'</span>));
+scissorsFiles = dir(fullfile(scissorsPath, <span class="string">'*.png'</span>));
+
+Nr = numel(rockFiles); Ns = numel(scissorsFiles); Np = numel(paperFiles);
+rockImages = cell(1, Nr); paperImages = cell(1, Np); scissorsImages = cell(1, Ns);
+rockLabels = zeros(1, Nr); paperLabels = ones(1, Np); scissorsLabels = 2 * ones(1, Ns);
+
+<span class="keyword">for</span> i = 1:Nr
+    imagePath = fullfile(rockPath, rockFiles(i).name);
+    rockImages{i} = rgb2hsv(imread(imagePath));
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> i = 1:Np
+    imagePath = fullfile(paperPath, paperFiles(i).name);
+    paperImages{i} = rgb2hsv(imread(imagePath));
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> i = 1:Ns
+    imagePath = fullfile(scissorsPath, scissorsFiles(i).name);
+    scissorsImages{i} = rgb2hsv(imread(imagePath));
+<span class="keyword">end</span>
+</pre><h2 id="2">Dobijanje obele&#382;ja</h2><pre class="codeinput">paperFeaturesRaw = processImages(paperImages);
+rockFeaturesRaw = processImages(rockImages);
+scissorFeaturesRaw = processImages(scissorsImages);
+
+<span class="comment">% save('KugliceObelezja.mat', 'paperFeaturesRaw', 'rockFeaturesRaw', 'scissorFeaturesRaw', 'Np', 'Nr', 'Ns');</span>
+</pre><h2 id="3">Standardizacija</h2><p>load('KugliceObelezja.mat');</p><pre class="codeinput">paperFeaturesRaw = paperFeaturesRaw(randperm(Np), :);
+scissorFeaturesRaw = scissorFeaturesRaw(randperm(Ns), :);
+rockFeaturesRaw = rockFeaturesRaw(randperm(Nr), :);
+
+paperTrain = paperFeaturesRaw(1:round(0.7*end),:);
+paperTest  = paperFeaturesRaw(round(0.7*end)+1:end,:);
+
+scissorTrain = scissorFeaturesRaw(1:round(0.7*end),:);
+scissorTest  = scissorFeaturesRaw(round(0.7*end)+1:end,:);
+
+rockTrain = rockFeaturesRaw(1:round(0.7*end),:);
+rockTest  = rockFeaturesRaw(round(0.7*end)+1:end,:);
+</pre><h2 id="4">Redukcija dimenzija na bazi matrice rasejanja</h2><pre class="codeinput">Mp = mean(paperTrain);
+Ms = mean(scissorTrain);
+Mr = mean(rockTrain);
+
+Sp = cov(paperTrain);
+Ss = cov(scissorTrain);
+Sr = cov(rockTrain);
+
+Pp = Np/(Np+Ns+Nr);
+Ps = Ns/(Np+Ns+Nr);
+Pr = Nr/(Np+Ns+Nr);
+
+Sw = Pp*Sp+Ps*Ss+Pr*Sr;
+M0 = Pp*Mp+Ps*Ms+Pr*Mr;
+Sb = Pp*(Mp-M0)*(Mp-M0)'+Ps*(Ms-M0)*(Ms-M0)'+Pr*(Mr-M0)*(Mr-M0)';
+S = (inv(Sw+Sb)*Sb);
+[V, D] = eig(S);
+
+figure;
+stem(diag(D), <span class="string">'filled'</span>);
+grid <span class="string">on</span>; grid <span class="string">minor</span>
+title(<span class="string">'Sopstvene vrednosti'</span>);
+xlabel(<span class="string">'Indeks'</span>); ylabel(<span class="string">'Intenzitet [r.j.]'</span>);
+
+A = V(:,5:end);
+paperTrainSmall = A'*paperTrain';
+scissorTrainSmall = A'*scissorTrain';
+rockTrainSmall = A'*rockTrain';
+
+paperTestSmall = A'*paperTest';
+scissorTestSmall = A'*scissorTest';
+rockTestSmall = A'*rockTest';
+</pre><img vspace="5" hspace="5" src="zadatak1_bonus_PO_01.png" alt=""> <h2 id="5">Test vi&#353;e hipoteza minimalne verovatno&#263;e gre&#353;ke</h2><pre class="codeinput">Mp = mean(paperTrainSmall, 2);
+Ms = mean(scissorTrainSmall, 2);
+Mr = mean(rockTrainSmall, 2);
+
+Sp = cov(paperTrainSmall');
+Ss = cov(scissorTrainSmall');
+Sr = cov(rockTrainSmall');
+
+labels = [ones(1, length(paperTestSmall)), 2 * ones(1, length(scissorTestSmall)), 3 * ones(1, length(rockTestSmall))];
+pred = [];
+<span class="keyword">for</span> x = [paperTestSmall scissorTestSmall rockTestSmall]
+    qp = log(Pp) - 0.5*log(det(Sp)) - 0.5*(x-Mp)'*inv(Sp)*(x-Mp);
+    qr = log(Pr) - 0.5*log(det(Sr)) - 0.5*(x-Mr)'*inv(Sr)*(x-Mr);
+    qs = log(Ps) - 0.5*log(det(Ss)) - 0.5*(x-Ms)'*inv(Ss)*(x-Ms);
+    [~, pred(end+1)] = max([qp, qs, qr]);
+<span class="keyword">end</span>
+
+accuracy = sum(pred == labels) / length(pred);
+disp([<span class="string">'Ta&#269;nost: '</span>, num2str(accuracy)]);
+<span class="comment">% CM(I,J) known group labels I, predicted J.</span>
+C = confusionmat(labels, pred);
+disp(<span class="string">'Matrica konfuzije'</span>);
+classNames = {<span class="string">'Papir'</span>, <span class="string">'Makaze'</span>, <span class="string">'Kamen'</span>};
+confusionTable = array2table(C, <span class="string">'RowNames'</span>, classNames, <span class="string">'VariableNames'</span>, classNames);
+display(confusionTable);
+</pre><pre class="codeoutput">Ta&#269;nost: 0.90312
+Matrica konfuzije
+
+confusionTable =
+
+  3&times;3 table
+
+              Papir    Makaze    Kamen
+              _____    ______    _____
+
+    Papir      202        3         9 
+    Makaze       1      221         3 
+    Kamen       46        0       155 
+
+</pre><h2 id="6">Makaze i kamen su najseparabilnije</h2><pre class="codeinput">Ms = mean(scissorFeaturesRaw);
+Mr = mean(rockFeaturesRaw);
+
+Ss = cov(scissorTrain);
+Sr = cov(rockTrain);
+
+P1 = Ns/(Ns+Nr);
+P2 = Nr/(Ns+Nr);
+
+Sw = P1*Ss+P1*Sr;
+M0 = P1*Ms+P2*Mr;
+Sb = P1*(Ms-M0)*(Ms-M0)'+P2*(Mr-M0)*(Mr-M0)';
+S = (inv(Sw+Sb)*Sb);
+[V, D] = eig(S);
+
+figure;
+stem(diag(D), <span class="string">'filled'</span>);
+grid <span class="string">on</span>; grid <span class="string">minor</span>
+title(<span class="string">'Sopstvene vrednosti'</span>);
+xlabel(<span class="string">'Indeks'</span>); ylabel(<span class="string">'Intenzitet [r.j.]'</span>);
+
+A = V(:, 11:12);
+
+s = A'*scissorFeaturesRaw';
+r = A'*rockFeaturesRaw';
+
+figure;
+subplot(211);
+hold <span class="string">all</span>
+histogram(r(1, :), <span class="string">'FaceColor'</span>, <span class="string">'r'</span>);
+histogram(s(1, :), <span class="string">'FaceColor'</span>, <span class="string">'b'</span>);
+title(<span class="string">'Prvo obele&#382;je'</span>);
+
+subplot(212);
+hold <span class="string">all</span>
+histogram(r(2, :), <span class="string">'FaceColor'</span>, <span class="string">'r'</span>);
+histogram(s(2, :), <span class="string">'FaceColor'</span>, <span class="string">'b'</span>);
+title(<span class="string">'Drugo obele&#382;je'</span>);
+
+U = []; G = [ones(length(s)+length(r), 1)];
+<span class="keyword">for</span> x = r
+    U(:,end+1) = -[1 x(1)^2 x(1)*x(2) x(2)^2]';
+<span class="keyword">end</span>
+<span class="keyword">for</span> x = s
+    U(:,end+1) = [1 x(1)^2 x(1)*x(2) x(2)^2]';
+<span class="keyword">end</span>
+
+W = pinv(U)'*G;
+
+x1_range = linspace(min([r(1, :), s(1, :)]), max([r(1, :), s(1, :)]), 100);
+x2_range = linspace(min([r(2, :), s(2, :)]), max([r(2, :), s(2, :)]), 100);
+[x1, x2] = meshgrid(x1_range, x2_range);
+hx = W(1) + W(2) * x1.^2 + W(3) * x1 .* x2 + W(4) * x2.^2;
+
+figure;
+title(<span class="string">'Kvadratni klasifikator metodom &#382;eljenog izlaza'</span>)
+hold <span class="string">all</span>
+grid <span class="string">on</span>
+scatter(r(1,:),r(2,:), <span class="string">'ro'</span>);
+scatter(s(1,:),s(2,:),<span class="string">'bv'</span>);
+contour(x1, x2, hx, [0, 0], <span class="string">'LineColor'</span>, <span class="string">'g'</span>);
+legend(<span class="string">'kamen'</span>,<span class="string">'makaze'</span>)
+</pre><img vspace="5" hspace="5" src="zadatak1_bonus_PO_02.png" alt=""> <img vspace="5" hspace="5" src="zadatak1_bonus_PO_03.png" alt=""> <img vspace="5" hspace="5" src="zadatak1_bonus_PO_04.png" alt=""> <h2 id="7">Prikaz koraka u obradi slike</h2><pre class="codeinput">depictProcess(<span class="string">'Kamen'</span>, rockImages{randi([1, Nr])})
+depictProcess(<span class="string">'Papir'</span>, paperImages{randi([1, Np])})
+depictProcess(<span class="string">'Makaze'</span>, scissorsImages{randi([1, Ns])})
+</pre><h2 id="8">Funkcija za prikaz obrade slike</h2><pre class="codeinput"><span class="keyword">function</span> depictProcess(class, img)
+    h = fspecial(<span class="string">'gaussian'</span>, [5, 5], 1.0);
+
+    figure;
+    sgtitle(class)
+
+    subplot(221);
+    imshow(img);
+    title(<span class="string">'H komponenta HSV'</span>);
+
+    temp = imfilter(img, h, <span class="string">'conv'</span>);
+    subplot(222);
+    imshow(temp);
+    title(<span class="string">'Gausov filter'</span>);
+
+    temp = imbinarize(temp(:,:,1));
+    subplot(223);
+    imshow(temp);
+    title(<span class="string">'Binarizacija Otsu metodom'</span>);
+
+    temp = imerode(imdilate(temp, strel(<span class="string">'disk'</span>, 5)), strel(<span class="string">'disk'</span>, 5));
+    subplot(224);
+    imshow(temp);
+    title([<span class="string">'Morfolo&#353;ko uklanjanje &#353;uma, povr&#353;ina: '</span> num2str(sum(sum(1-temp)))])
+
+    stats = regionprops(1-temp, <span class="string">'Centroid'</span>, <span class="string">'MajorAxisLength'</span>, <span class="string">'MinorAxisLength'</span>, <span class="string">'Orientation'</span>);
+    majorAxis = stats.MajorAxisLength;
+    minorAxis = stats.MinorAxisLength;
+    orientation = stats.Orientation;
+    centroid = stats.Centroid;
+
+    hold <span class="string">on</span>;
+    plot(centroid(1), centroid(2), <span class="string">'ro'</span>);  <span class="comment">% plot centroid</span>
+    plot([centroid(1), centroid(1) + 0.5 * majorAxis * cosd(orientation)], <span class="keyword">...</span>
+         [centroid(2), centroid(2) + 0.5 * majorAxis * sind(orientation)], <span class="string">'r-'</span>, <span class="string">'LineWidth'</span>, 2);
+
+    plot([centroid(1), centroid(1) + 0.5 * minorAxis * cosd(orientation + 90)], <span class="keyword">...</span>
+             [centroid(2), centroid(2) + 0.5 * minorAxis * sind(orientation + 90)], <span class="string">'g:'</span>, <span class="string">'LineWidth'</span>, 2);
+
+    hold <span class="string">off</span>;
+
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="zadatak1_bonus_PO_05.png" alt=""> <img vspace="5" hspace="5" src="zadatak1_bonus_PO_06.png" alt=""> <img vspace="5" hspace="5" src="zadatak1_bonus_PO_07.png" alt=""> <h2 id="9">Funkcija za obradu slike</h2><pre class="codeinput"><span class="keyword">function</span> L = processImages(batch)
+    N = length(batch);
+    L = zeros(N, 12);
+
+    h = fspecial(<span class="string">'gaussian'</span>, [5, 5], 1.0);
+
+    <span class="keyword">for</span> i=1:N
+        temp = imfilter(batch{i}(:,:,1), h, <span class="string">'conv'</span>);
+        temp = imbinarize(temp);
+        temp = imdilate(temp, strel(<span class="string">'disk'</span>, 5));
+        temp = imerode(temp, strel(<span class="string">'disk'</span>, 5));
+
+        stats = regionprops(1-temp, <span class="string">'Centroid'</span>, <span class="string">'MajorAxisLength'</span>,<span class="string">'MinorAxisLength'</span>,<span class="string">'Orientation'</span>,<span class="string">'Eccentricity'</span>,<span class="string">'FilledArea'</span>,<span class="string">'Area'</span>,<span class="string">'ConvexArea'</span>,<span class="string">'Circularity'</span>,<span class="string">'Solidity'</span>,<span class="string">'Extent'</span>);
+
+        L(i, :) = [stats.Centroid, stats.MajorAxisLength, stats.MinorAxisLength, stats.Orientation, stats.Eccentricity, stats.FilledArea, stats.Area, stats.ConvexArea, stats.Circularity, stats.Solidity, stats.Extent];
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Ucitavanje
+clear; close all; clc
+
+rockPath = 'signs/rock';
+paperPath = 'signs/paper';
+scissorsPath = 'signs/scissors';
+
+rockFiles = dir(fullfile(rockPath, '*.png'));
+paperFiles = dir(fullfile(paperPath, '*.png'));
+scissorsFiles = dir(fullfile(scissorsPath, '*.png'));
+
+Nr = numel(rockFiles); Ns = numel(scissorsFiles); Np = numel(paperFiles);
+rockImages = cell(1, Nr); paperImages = cell(1, Np); scissorsImages = cell(1, Ns);
+rockLabels = zeros(1, Nr); paperLabels = ones(1, Np); scissorsLabels = 2 * ones(1, Ns);
+
+for i = 1:Nr
+    imagePath = fullfile(rockPath, rockFiles(i).name);
+    rockImages{i} = rgb2hsv(imread(imagePath));
+end
+
+for i = 1:Np
+    imagePath = fullfile(paperPath, paperFiles(i).name);
+    paperImages{i} = rgb2hsv(imread(imagePath));
+end
+
+for i = 1:Ns
+    imagePath = fullfile(scissorsPath, scissorsFiles(i).name);
+    scissorsImages{i} = rgb2hsv(imread(imagePath));
+end
+
+%% Dobijanje obeležja
+paperFeaturesRaw = processImages(paperImages);
+rockFeaturesRaw = processImages(rockImages);
+scissorFeaturesRaw = processImages(scissorsImages);
+
+% save('KugliceObelezja.mat', 'paperFeaturesRaw', 'rockFeaturesRaw', 'scissorFeaturesRaw', 'Np', 'Nr', 'Ns');
+%% Standardizacija
+% load('KugliceObelezja.mat');
+
+paperFeaturesRaw = paperFeaturesRaw(randperm(Np), :);
+scissorFeaturesRaw = scissorFeaturesRaw(randperm(Ns), :);
+rockFeaturesRaw = rockFeaturesRaw(randperm(Nr), :);
+
+paperTrain = paperFeaturesRaw(1:round(0.7*end),:);
+paperTest  = paperFeaturesRaw(round(0.7*end)+1:end,:);
+
+scissorTrain = scissorFeaturesRaw(1:round(0.7*end),:);
+scissorTest  = scissorFeaturesRaw(round(0.7*end)+1:end,:);
+
+rockTrain = rockFeaturesRaw(1:round(0.7*end),:);
+rockTest  = rockFeaturesRaw(round(0.7*end)+1:end,:);
+
+%% Redukcija dimenzija na bazi matrice rasejanja
+
+Mp = mean(paperTrain);
+Ms = mean(scissorTrain);
+Mr = mean(rockTrain);
+
+Sp = cov(paperTrain);
+Ss = cov(scissorTrain);
+Sr = cov(rockTrain);
+
+Pp = Np/(Np+Ns+Nr);
+Ps = Ns/(Np+Ns+Nr);
+Pr = Nr/(Np+Ns+Nr);
+
+Sw = Pp*Sp+Ps*Ss+Pr*Sr;
+M0 = Pp*Mp+Ps*Ms+Pr*Mr;
+Sb = Pp*(Mp-M0)*(Mp-M0)'+Ps*(Ms-M0)*(Ms-M0)'+Pr*(Mr-M0)*(Mr-M0)';
+S = (inv(Sw+Sb)*Sb);
+[V, D] = eig(S);
+
+figure;
+stem(diag(D), 'filled');
+grid on; grid minor
+title('Sopstvene vrednosti');
+xlabel('Indeks'); ylabel('Intenzitet [r.j.]');
+
+A = V(:,5:end);
+paperTrainSmall = A'*paperTrain';
+scissorTrainSmall = A'*scissorTrain';
+rockTrainSmall = A'*rockTrain';
+
+paperTestSmall = A'*paperTest';
+scissorTestSmall = A'*scissorTest';
+rockTestSmall = A'*rockTest';
+
+%% Test više hipoteza minimalne verovatnoće greške
+
+Mp = mean(paperTrainSmall, 2);
+Ms = mean(scissorTrainSmall, 2);
+Mr = mean(rockTrainSmall, 2);
+
+Sp = cov(paperTrainSmall');
+Ss = cov(scissorTrainSmall');
+Sr = cov(rockTrainSmall');
+
+labels = [ones(1, length(paperTestSmall)), 2 * ones(1, length(scissorTestSmall)), 3 * ones(1, length(rockTestSmall))];
+pred = [];
+for x = [paperTestSmall scissorTestSmall rockTestSmall]
+    qp = log(Pp) - 0.5*log(det(Sp)) - 0.5*(x-Mp)'*inv(Sp)*(x-Mp);
+    qr = log(Pr) - 0.5*log(det(Sr)) - 0.5*(x-Mr)'*inv(Sr)*(x-Mr);
+    qs = log(Ps) - 0.5*log(det(Ss)) - 0.5*(x-Ms)'*inv(Ss)*(x-Ms);
+    [~, pred(end+1)] = max([qp, qs, qr]);
+end
+
+accuracy = sum(pred == labels) / length(pred);
+disp(['Tačnost: ', num2str(accuracy)]);
+% CM(I,J) known group labels I, predicted J.
+C = confusionmat(labels, pred); 
+disp('Matrica konfuzije');
+classNames = {'Papir', 'Makaze', 'Kamen'};
+confusionTable = array2table(C, 'RowNames', classNames, 'VariableNames', classNames);
+display(confusionTable);
+
+%% Makaze i kamen su najseparabilnije
+
+Ms = mean(scissorFeaturesRaw);
+Mr = mean(rockFeaturesRaw);
+
+Ss = cov(scissorTrain);
+Sr = cov(rockTrain);
+
+P1 = Ns/(Ns+Nr);
+P2 = Nr/(Ns+Nr);
+
+Sw = P1*Ss+P1*Sr;
+M0 = P1*Ms+P2*Mr;
+Sb = P1*(Ms-M0)*(Ms-M0)'+P2*(Mr-M0)*(Mr-M0)';
+S = (inv(Sw+Sb)*Sb);
+[V, D] = eig(S);
+
+figure;
+stem(diag(D), 'filled');
+grid on; grid minor
+title('Sopstvene vrednosti');
+xlabel('Indeks'); ylabel('Intenzitet [r.j.]');
+
+A = V(:, 11:12);
+
+s = A'*scissorFeaturesRaw';
+r = A'*rockFeaturesRaw';
+
+figure;
+subplot(211);
+hold all
+histogram(r(1, :), 'FaceColor', 'r');
+histogram(s(1, :), 'FaceColor', 'b');
+title('Prvo obeležje');
+
+subplot(212);
+hold all
+histogram(r(2, :), 'FaceColor', 'r');
+histogram(s(2, :), 'FaceColor', 'b');
+title('Drugo obeležje');
+
+U = []; G = [ones(length(s)+length(r), 1)];
+for x = r
+    U(:,end+1) = -[1 x(1)^2 x(1)*x(2) x(2)^2]';
+end
+for x = s
+    U(:,end+1) = [1 x(1)^2 x(1)*x(2) x(2)^2]';
+end
+
+W = pinv(U)'*G;
+
+x1_range = linspace(min([r(1, :), s(1, :)]), max([r(1, :), s(1, :)]), 100);
+x2_range = linspace(min([r(2, :), s(2, :)]), max([r(2, :), s(2, :)]), 100);
+[x1, x2] = meshgrid(x1_range, x2_range);
+hx = W(1) + W(2) * x1.^2 + W(3) * x1 .* x2 + W(4) * x2.^2;
+
+figure;
+title('Kvadratni klasifikator metodom željenog izlaza')
+hold all
+grid on
+scatter(r(1,:),r(2,:), 'ro');
+scatter(s(1,:),s(2,:),'bv');
+contour(x1, x2, hx, [0, 0], 'LineColor', 'g');
+legend('kamen','makaze')
+
+%% Prikaz koraka u obradi slike
+depictProcess('Kamen', rockImages{randi([1, Nr])})
+depictProcess('Papir', paperImages{randi([1, Np])})
+depictProcess('Makaze', scissorsImages{randi([1, Ns])})
+
+%% Funkcija za prikaz obrade slike
+function depictProcess(class, img)
+    h = fspecial('gaussian', [5, 5], 1.0);
+
+    figure;
+    sgtitle(class)    
+    
+    subplot(221);
+    imshow(img);
+    title('H komponenta HSV');
+    
+    temp = imfilter(img, h, 'conv');
+    subplot(222);
+    imshow(temp);
+    title('Gausov filter');
+    
+    temp = imbinarize(temp(:,:,1));
+    subplot(223);
+    imshow(temp);
+    title('Binarizacija Otsu metodom');
+    
+    temp = imerode(imdilate(temp, strel('disk', 5)), strel('disk', 5));
+    subplot(224);
+    imshow(temp);
+    title(['Morfološko uklanjanje šuma, površina: ' num2str(sum(sum(1-temp)))])
+    
+    stats = regionprops(1-temp, 'Centroid', 'MajorAxisLength', 'MinorAxisLength', 'Orientation');
+    majorAxis = stats.MajorAxisLength;
+    minorAxis = stats.MinorAxisLength;
+    orientation = stats.Orientation;
+    centroid = stats.Centroid;
+    
+    hold on;
+    plot(centroid(1), centroid(2), 'ro');  % plot centroid
+    plot([centroid(1), centroid(1) + 0.5 * majorAxis * cosd(orientation)], ...
+         [centroid(2), centroid(2) + 0.5 * majorAxis * sind(orientation)], 'r-', 'LineWidth', 2);
+    
+    plot([centroid(1), centroid(1) + 0.5 * minorAxis * cosd(orientation + 90)], ...
+             [centroid(2), centroid(2) + 0.5 * minorAxis * sind(orientation + 90)], 'g:', 'LineWidth', 2);
+    
+    hold off;
+
+end
+
+%% Funkcija za obradu slike
+function L = processImages(batch)
+    N = length(batch);
+    L = zeros(N, 12);
+
+    h = fspecial('gaussian', [5, 5], 1.0);
+    
+    for i=1:N
+        temp = imfilter(batch{i}(:,:,1), h, 'conv');
+        temp = imbinarize(temp);
+        temp = imdilate(temp, strel('disk', 5));
+        temp = imerode(temp, strel('disk', 5));
+
+        stats = regionprops(1-temp, 'Centroid', 'MajorAxisLength','MinorAxisLength','Orientation','Eccentricity','FilledArea','Area','ConvexArea','Circularity','Solidity','Extent');
+        
+        L(i, :) = [stats.Centroid, stats.MajorAxisLength, stats.MinorAxisLength, stats.Orientation, stats.Eccentricity, stats.FilledArea, stats.Area, stats.ConvexArea, stats.Circularity, stats.Solidity, stats.Extent];
+    end
+end
+
+
+
+
+
+##### SOURCE END #####
+--></body></html>

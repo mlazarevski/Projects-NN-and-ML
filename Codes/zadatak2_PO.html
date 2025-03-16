@@ -1,0 +1,675 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>zadatak2_PO</title><meta name="generator" content="MATLAB 9.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2024-02-09"><meta name="DC.source" content="zadatak2_PO.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Parametri i graficki prikaz</a></li><li><a href="#2">Racunanje fgv i histograma</a></li><li><a href="#3">Bayes klasifikator</a></li><li><a href="#4">Greska</a></li><li><a href="#5">Test minimalne cene</a></li><li><a href="#6">Constant False Alarm Ratio</a></li><li><a href="#7">Wald</a></li><li><a href="#8">Broj potrebnih odbiraka Waldovog testa u zavisnosti od gre&#353;ke prvog i drugog tipa</a></li><li><a href="#10">Pojedina&#269;ni Wald test za ceo skup</a></li></ul></div><h2 id="1">Parametri i graficki prikaz</h2><pre class="codeinput">clear; close <span class="string">all</span>; clc;
+
+N = 500; P1 = 0.4; P2 = 0.8;
+M1 = [0 0]';
+S1 = [1 0.5; 0.5 1];
+M2 = [6 1]';
+S2 = [1.5 -0.7; -0.7 1.5];
+M3 = [6 6]';
+S3 = [1 0.6; 0.6 1];
+M4 = [12 2]';
+S4 = [2 0.2; 0.2 2];
+
+K11 = mvnrnd(M1,S1,N)';
+K12 = mvnrnd(M2,S2,N)';
+K21 = mvnrnd(M3,S3,N)';
+K22 = mvnrnd(M4,S4,N)';
+
+pom = rand(1,N);
+K1 = (pom&lt;=P1).*K11 + (pom&gt;P1).*K12;
+K2 = (pom&lt;=P2).*K21 + (pom&gt;P2).*K22;
+
+figure(1)
+hold <span class="string">all</span>
+title(<span class="string">'Bimodalne klase'</span>)
+scatter(K1(1,:),K1(2,:),<span class="string">'r*'</span>);
+scatter(K2(1,:),K2(2,:),<span class="string">'bo'</span>);
+grid <span class="string">on</span>
+grid <span class="string">minor</span>
+xlabel(<span class="string">'x1'</span>);
+ylabel(<span class="string">'x2'</span>);
+legend(<span class="string">'K1'</span>,<span class="string">'K2'</span>);
+
+M1_est = mean(K1')';
+S1_est = cov(K1');
+M2_est = mean(K2')';
+S2_est = cov(K2');
+</pre><img vspace="5" hspace="5" src="zadatak2_PO_01.png" alt=""> <h2 id="2">Racunanje fgv i histograma</h2><pre class="codeinput">step = 0.1;
+x = -5:step:20;
+y = -5:step:10;
+
+f1 = zeros(length(x),length(y));
+f2 = f1; h = f1;
+<span class="keyword">for</span> i=1:length(x)
+    <span class="keyword">for</span> j=1:length(y)
+        X = [x(i); y(j)];
+        pdf_values1 = 1 / (2 * pi * sqrt(det(S1))) * exp(-0.5 * (X - M1)'*inv(S1)*(X - M1));
+        pdf_values2 = 1 / (2 * pi * sqrt(det(S2))) * exp(-0.5 * (X - M2)'*inv(S2)*(X - M2));
+        f1(i,j) = P1*pdf_values1 + (1-P1)*pdf_values2;
+        pdf_values3 = 1 / (2 * pi * sqrt(det(S3))) * exp(-0.5 * (X - M3)'*inv(S3)*(X - M3));
+        pdf_values4 = 1 / (2 * pi * sqrt(det(S4))) * exp(-0.5 * (X - M4)'*inv(S4)*(X - M4));
+        f2(i,j) = P2*pdf_values3 + (1-P2)*pdf_values4;
+
+        h(i,j) = - log(f1(i,j)) + log(f2(i,j));
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+f1 = f1/sum(sum(f1));
+f2 = f2/sum(sum(f2));
+
+figure
+sgtitle(<span class="string">'Klasa K2'</span>)
+subplot(211)
+hist3(K2');
+title(<span class="string">'Histogram'</span>)
+subplot(212)
+surf(x, y, f2', <span class="string">'EdgeColor'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Funkcija gustine verovatno&#263;e'</span>)
+
+figure
+sgtitle(<span class="string">'Klasa K1'</span>)
+subplot(211)
+hist3(K1');
+title(<span class="string">'Histogram'</span>)
+subplot(212)
+surf(x, y, f1', <span class="string">'EdgeColor'</span>, <span class="string">'none'</span>);
+title(<span class="string">'Funkcija gustine verovatno&#263;e'</span>)
+</pre><img vspace="5" hspace="5" src="zadatak2_PO_02.png" alt=""> <img vspace="5" hspace="5" src="zadatak2_PO_03.png" alt=""> <h2 id="3">Bayes klasifikator</h2><p>N1 = N2 -&gt; P1 = P2 = 1/2 -ln(P2/P1) = 1</p><pre class="codeinput">figure(10)
+hold <span class="string">all</span>
+title(<span class="string">'Bayes klasifikator'</span>)
+scatter(K1(1,:),K1(2,:),<span class="string">'r*'</span>);
+scatter(K2(1,:),K2(2,:),<span class="string">'bo'</span>);
+contour(x,y,h',[0 0])
+grid <span class="string">on</span>
+grid <span class="string">minor</span>
+xlabel(<span class="string">'x1'</span>);
+ylabel(<span class="string">'x2'</span>);
+legend(<span class="string">'K1'</span>,<span class="string">'K2'</span>,<span class="string">'Bayes'</span>);
+
+figure(9)
+hold <span class="string">all</span>
+title(<span class="string">'Klasifikatori za testiranje hipoteza'</span>)
+scatter(K1(1,:),K1(2,:),<span class="string">'r*'</span>);
+scatter(K2(1,:),K2(2,:),<span class="string">'bo'</span>);
+contour(x,y,h',[0 0])
+grid <span class="string">on</span>
+grid <span class="string">minor</span>
+xlabel(<span class="string">'x1'</span>);
+ylabel(<span class="string">'x2'</span>);
+legend(<span class="string">'K1'</span>,<span class="string">'K2'</span>,<span class="string">'Bayes'</span>);
+</pre><img vspace="5" hspace="5" src="zadatak2_PO_04.png" alt=""> <img vspace="5" hspace="5" src="zadatak2_PO_05.png" alt=""> <h2 id="4">Greska</h2><pre class="codeinput">e_metod1 = [sum(f1(h &gt; 0)); sum(f2(h &lt; 0))].*step^2;
+
+<span class="keyword">for</span> i=1:length(x)
+    <span class="keyword">for</span> j=1:length(y)
+        X = [x(i); y(j)];
+        pdf_values1 = 1 / (2 * pi * sqrt(det(S1))) * exp(-0.5 * (X - M1)'*inv(S1)*(X - M1));
+        pdf_values2 = 1 / (2 * pi * sqrt(det(S2))) * exp(-0.5 * (X - M2)'*inv(S2)*(X - M2));
+        f1(i,j) = P1*pdf_values1 + (1-P1)*pdf_values2;
+        pdf_values3 = 1 / (2 * pi * sqrt(det(S3))) * exp(-0.5 * (X - M3)'*inv(S3)*(X - M3));
+        pdf_values4 = 1 / (2 * pi * sqrt(det(S4))) * exp(-0.5 * (X - M4)'*inv(S4)*(X - M4));
+        f2(i,j) = P2*pdf_values3 + (1-P2)*pdf_values4;
+
+        h(i,j) = - log(f1(i,j)) + log(f2(i,j));
+
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+
+e_metod2 = [0;0];
+
+<span class="keyword">for</span> i=1:length(K1)
+    X = K1(:,i);
+    pdf_values1 = 1 / (2 * pi * sqrt(det(S1))) * exp(-0.5 * (X - M1)'*inv(S1)*(X - M1));
+    pdf_values2 = (1 / (2 * pi * sqrt(det(S2)))) * exp(-0.5 * (X - M2)'*inv(S2)*(X - M2));
+    f1_temp = P1*pdf_values1 + (1-P1)*pdf_values2;
+    pdf_values3 = (1 / (2 * pi * sqrt(det(S3)))) * exp(-0.5 * (X - M3)'*inv(S3)*(X - M3));
+    pdf_values4 = (1 / (2 * pi * sqrt(det(S4)))) * exp(-0.5 * (X - M4)'*inv(S4)*(X - M4));
+    f2_temp = P2*pdf_values3 + (1-P2)*pdf_values4;
+
+    H1(i) = - log(f1_temp) + log(f2_temp);
+    e_metod2(1) = e_metod2(1) + 1 * (0 &lt; H1(i));
+<span class="keyword">end</span>
+
+<span class="keyword">for</span> i=1:length(K2)
+    X = K2(:,i);
+    pdf_values1 = 1 / (2 * pi * sqrt(det(S1))) * exp(-0.5 * (X - M1)'*inv(S1)*(X - M1));
+    pdf_values2 = (1 / (2 * pi * sqrt(det(S2)))) * exp(-0.5 * (X - M2)'*inv(S2)*(X - M2));
+    f1_temp = P1*pdf_values1 + (1-P1)*pdf_values2;
+    pdf_values3 = (1 / (2 * pi * sqrt(det(S3)))) * exp(-0.5 * (X - M3)'*inv(S3)*(X - M3));
+    pdf_values4 = (1 / (2 * pi * sqrt(det(S4)))) * exp(-0.5 * (X - M4)'*inv(S4)*(X - M4));
+    f2_temp = P2*pdf_values3 + (1-P2)*pdf_values4;
+
+    H2(i) = - log(f1_temp) + log(f2_temp); <span class="comment">% Wald's Sequential Test</span>
+    e_metod2(2) = e_metod2(2) + 1 * (0 &gt; H2(i));
+<span class="keyword">end</span>
+e_metod2 = e_metod2/N;
+
+display(sprintf([<span class="string">'Metod:\t'</span> <span class="string">'Gre&#353;ka prvog tipa'</span> <span class="string">'\tGre&#353;ka drugog tipa'</span>]))
+display([<span class="string">'Teorijski:  '</span> num2str(e_metod1')])
+display([<span class="string">'Empirijski: '</span> num2str(e_metod2')])
+</pre><pre class="codeoutput">Metod:	Gre&#353;ka prvog tipa	Gre&#353;ka drugog tipa
+Teorijski:  0.00010942  9.9152e-05
+Empirijski: 0.016        0.01
+</pre><h2 id="5">Test minimalne cene</h2><pre class="codeinput">C11 = 0; C22 = 0;
+C21 = 1; C12 = 5;
+T = - log((C12 - C22) / (C21 - C11)) ;
+
+figure(9)
+contour(x,y,h',[T T], <span class="string">'m--'</span>)
+legend(<span class="string">'K1'</span>,<span class="string">'K2'</span>,<span class="string">'Bayes'</span>,<span class="string">'Test minimalne cene'</span>);
+</pre><img vspace="5" hspace="5" src="zadatak2_PO_06.png" alt=""> <h2 id="6">Constant False Alarm Ratio</h2><p>Neuman-Pearson test e2 = e0 jer je e0 vec minimalna greska, nadamo se da ce ovaj uslov imati posledicu e1 -&gt; 0</p><pre class="codeinput">e0 = sum(e_metod1);
+e2 = e0;
+
+Nmi = 100*N;
+pom = rand(1,Nmi);
+K2_temp = (pom&lt;=P2).*mvnrnd(M3,S3,Nmi)' + (pom&gt;P2).*mvnrnd(M4,S4,Nmi)';
+
+<span class="keyword">for</span> i=1:Nmi
+    X = K2_temp(:,i);
+    pdf_values1 = 1 / (2 * pi * sqrt(det(S1))) * exp(-0.5 * (X - M1)'*inv(S1)*(X - M1));
+    pdf_values2 = 1 / (2 * pi * sqrt(det(S2))) * exp(-0.5 * (X - M2)'*inv(S2)*(X - M2));
+    f1_mi = P1*pdf_values1 + (1-P1)*pdf_values2;
+    pdf_values3 = 1 / (2 * pi * sqrt(det(S3))) * exp(-0.5 * (X - M3)'*inv(S3)*(X - M3));
+    pdf_values4 = 1 / (2 * pi * sqrt(det(S4))) * exp(-0.5 * (X - M4)'*inv(S4)*(X - M4));
+    f2_mi = P2*pdf_values3 + (1-P2)*pdf_values4;
+
+    h_mi(i) = - log(f1_mi) + log(f2_mi);
+<span class="keyword">end</span>
+
+
+h_mi = sort(h_mi);
+mi = exp(-h_mi(round(e0*Nmi)));
+
+T = -log(mi);
+
+figure(9)
+contour(x,y,h',[T T], <span class="string">'g:'</span>)
+legend(<span class="string">'K1'</span>,<span class="string">'K2'</span>,<span class="string">'Bayes'</span>,<span class="string">'Test minimalne cene'</span>,<span class="string">'CFAR'</span>);
+</pre><img vspace="5" hspace="5" src="zadatak2_PO_07.png" alt=""> <h2 id="7">Wald</h2><pre class="codeinput">e = [1e-100, 1e-50];
+a = -log ((1 - e(1))/e(2)); b = -log(e(1)/(1-e(2)));
+
+seq1_len = [];
+seq2_len = [];
+figure; hold <span class="string">all</span>;
+<span class="keyword">for</span> i = 1:100
+    [Seq1, Seq2] = my_wald(H1(randperm(N)), H2(randperm(N)), a, b);
+
+    plot(Seq1, <span class="string">'r'</span>);
+    plot(Seq2, <span class="string">'b'</span>);
+
+    seq1_len = [seq1_len length(Seq1)];
+    seq2_len = [seq2_len length(Seq2)];
+<span class="keyword">end</span>
+
+plot([0, max([seq1_len seq2_len])], [a, a], <span class="string">'k--'</span>);
+plot([0, max([seq1_len seq2_len])], [b, b], <span class="string">'k--'</span>);
+
+hold <span class="string">off</span>;
+xlabel(<span class="string">'Broj odbiraka'</span>);
+title(<span class="string">'Sekvencijalni Wald test'</span>);
+legend(<span class="string">'K1'</span>, <span class="string">'K2'</span>, <span class="string">'Location'</span>, <span class="string">'best'</span>);
+
+Ehw1 = sum(sum(step^2*f1.*h));
+Ehw2 = sum(sum(step^2*f2.*h));
+
+Esw1 = a*(1-e(1))+b*e(1);
+Esw2 = b*(1-e(2))+a*e(2);
+
+Em1 = Esw1/Ehw1; Em2 = Esw2/Ehw2;
+
+display(<span class="string">'Teorijski'</span>)
+display(sprintf(<span class="string">'Srednja sekvenca w1: %d\nSrednja sekvenca w2: %d'</span>, Em1, Em2));
+display(<span class="string">'Empirijski'</span>)
+display(sprintf(<span class="string">'Srednja sekvenca w1: %d\nSrednja sekvenca w2: %d'</span>, mean(seq1_len), mean(seq2_len)));
+</pre><img vspace="5" hspace="5" src="zadatak2_PO_08.png" alt=""> <h2 id="8">Broj potrebnih odbiraka Waldovog testa u zavisnosti od gre&#353;ke prvog i drugog tipa</h2><pre class="codeinput">E1 = logspace(-1, -100, 100); E2 = logspace(-1, -100, 100);
+
+Em1 = zeros(size(E1)); Em2 = zeros(size(E2));
+
+cnt1 = 0;
+<span class="keyword">for</span> e1 = E1
+    cnt1 = cnt1 + 1;
+    cnt2 = 0;
+    <span class="keyword">for</span> e2 = E2
+        cnt2 = cnt2 + 1;
+        a = -log ((1 - e(1))/e(2)); b = -log(e(1)/(1-e(2)));
+
+        Ehw1 = sum(sum(step^2*f1.*h));
+        Ehw2 = sum(sum(step^2*f2.*h));
+
+        Esw1 = a*(1-e1)+b*e1;
+        Esw2 = b*(1-e2)+a*e2;
+
+        Em1(cnt1, cnt2) = Esw1/Ehw1; Em2(cnt1, cnt2) = Esw2/Ehw2;
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeinput">figure
+sgtitle(<span class="string">'Uslovno o&#269;ekivanje za neophodan broj odbiraka'</span>)
+subplot(1, 2, 1);
+surf(E1, E2, Em1, <span class="string">'EdgeColor'</span>, <span class="string">'none'</span>);
+xlabel(<span class="string">'\epsilon_1'</span>);
+ylabel(<span class="string">'\epsilon_2'</span>);
+zlabel(<span class="string">'$E\{m|\omega\}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+title(<span class="string">'K1'</span>);
+
+set(gca, <span class="string">'XScale'</span>, <span class="string">'log'</span>);
+set(gca, <span class="string">'YScale'</span>, <span class="string">'log'</span>);
+
+subplot(1, 2, 2);
+surf(E1, E2, Em2, <span class="string">'EdgeColor'</span>, <span class="string">'none'</span>);
+xlabel(<span class="string">'\epsilon_1'</span>);
+ylabel(<span class="string">'\epsilon_2'</span>);
+zlabel(<span class="string">'$E\{m|\omega\}$'</span>, <span class="string">'Interpreter'</span>, <span class="string">'latex'</span>);
+title(<span class="string">'K2'</span>);
+
+set(gca, <span class="string">'XScale'</span>, <span class="string">'log'</span>);
+set(gca, <span class="string">'YScale'</span>, <span class="string">'log'</span>);
+</pre><img vspace="5" hspace="5" src="zadatak2_PO_09.png" alt=""> <h2 id="10">Pojedina&#269;ni Wald test za ceo skup</h2><pre class="codeinput"><span class="keyword">function</span> [Seq1, Seq2] = my_wald(H1, H2, a, b)
+    Sm = 0; Seq1 = [];
+    <span class="keyword">for</span> h1 = H1
+        Sm = Sm + h1;
+        Seq1 = [Seq1 Sm];
+        <span class="keyword">if</span> Sm &lt; a
+            <span class="keyword">break</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    Sm = 0; Seq2 = [];
+    <span class="keyword">for</span> h2 = H2
+        Sm = Sm + h2;
+        Seq2 = [Seq2 Sm];
+        <span class="keyword">if</span> Sm &gt; b
+            <span class="keyword">break</span>
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">Teorijski
+Srednja sekvenca w1: 8.418964e+00
+Srednja sekvenca w2: 1.810743e+01
+Empirijski
+Srednja sekvenca w1: 9.390000e+00
+Srednja sekvenca w2: 1.904000e+01
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2023a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Parametri i graficki prikaz
+clear; close all; clc;
+
+N = 500; P1 = 0.4; P2 = 0.8;
+M1 = [0 0]';
+S1 = [1 0.5; 0.5 1];
+M2 = [6 1]';
+S2 = [1.5 -0.7; -0.7 1.5];
+M3 = [6 6]';
+S3 = [1 0.6; 0.6 1];
+M4 = [12 2]';
+S4 = [2 0.2; 0.2 2];
+
+K11 = mvnrnd(M1,S1,N)';
+K12 = mvnrnd(M2,S2,N)';
+K21 = mvnrnd(M3,S3,N)';
+K22 = mvnrnd(M4,S4,N)';
+
+pom = rand(1,N); 
+K1 = (pom<=P1).*K11 + (pom>P1).*K12;
+K2 = (pom<=P2).*K21 + (pom>P2).*K22;
+
+figure(1)
+hold all
+title('Bimodalne klase')
+scatter(K1(1,:),K1(2,:),'r*');
+scatter(K2(1,:),K2(2,:),'bo');
+grid on
+grid minor
+xlabel('x1');
+ylabel('x2');
+legend('K1','K2');
+
+M1_est = mean(K1')';
+S1_est = cov(K1');
+M2_est = mean(K2')';
+S2_est = cov(K2');
+
+%% Racunanje fgv i histograma
+step = 0.1;
+x = -5:step:20;
+y = -5:step:10;
+
+f1 = zeros(length(x),length(y));
+f2 = f1; h = f1;
+for i=1:length(x)
+    for j=1:length(y)
+        X = [x(i); y(j)];
+        pdf_values1 = 1 / (2 * pi * sqrt(det(S1))) * exp(-0.5 * (X - M1)'*inv(S1)*(X - M1));
+        pdf_values2 = 1 / (2 * pi * sqrt(det(S2))) * exp(-0.5 * (X - M2)'*inv(S2)*(X - M2));
+        f1(i,j) = P1*pdf_values1 + (1-P1)*pdf_values2;
+        pdf_values3 = 1 / (2 * pi * sqrt(det(S3))) * exp(-0.5 * (X - M3)'*inv(S3)*(X - M3));
+        pdf_values4 = 1 / (2 * pi * sqrt(det(S4))) * exp(-0.5 * (X - M4)'*inv(S4)*(X - M4));
+        f2(i,j) = P2*pdf_values3 + (1-P2)*pdf_values4;
+        
+        h(i,j) = - log(f1(i,j)) + log(f2(i,j));
+    end
+end
+
+f1 = f1/sum(sum(f1));
+f2 = f2/sum(sum(f2));
+
+figure
+sgtitle('Klasa K2')
+subplot(211)
+hist3(K2'); 
+title('Histogram')
+subplot(212)
+surf(x, y, f2', 'EdgeColor', 'none');
+title('Funkcija gustine verovatnoće')
+
+figure
+sgtitle('Klasa K1')
+subplot(211)
+hist3(K1'); 
+title('Histogram')
+subplot(212)
+surf(x, y, f1', 'EdgeColor', 'none');
+title('Funkcija gustine verovatnoće') 
+
+%% Bayes klasifikator
+% N1 = N2 -> P1 = P2 = 1/2
+% -ln(P2/P1) = 1
+
+figure(10)
+hold all
+title('Bayes klasifikator')
+scatter(K1(1,:),K1(2,:),'r*');
+scatter(K2(1,:),K2(2,:),'bo');
+contour(x,y,h',[0 0])
+grid on
+grid minor
+xlabel('x1');
+ylabel('x2');
+legend('K1','K2','Bayes');
+
+figure(9)
+hold all
+title('Klasifikatori za testiranje hipoteza')
+scatter(K1(1,:),K1(2,:),'r*');
+scatter(K2(1,:),K2(2,:),'bo');
+contour(x,y,h',[0 0])
+grid on
+grid minor
+xlabel('x1');
+ylabel('x2');
+legend('K1','K2','Bayes');
+
+%% Greska
+e_metod1 = [sum(f1(h > 0)); sum(f2(h < 0))].*step^2;
+
+for i=1:length(x)
+    for j=1:length(y)
+        X = [x(i); y(j)];
+        pdf_values1 = 1 / (2 * pi * sqrt(det(S1))) * exp(-0.5 * (X - M1)'*inv(S1)*(X - M1));
+        pdf_values2 = 1 / (2 * pi * sqrt(det(S2))) * exp(-0.5 * (X - M2)'*inv(S2)*(X - M2));
+        f1(i,j) = P1*pdf_values1 + (1-P1)*pdf_values2;
+        pdf_values3 = 1 / (2 * pi * sqrt(det(S3))) * exp(-0.5 * (X - M3)'*inv(S3)*(X - M3));
+        pdf_values4 = 1 / (2 * pi * sqrt(det(S4))) * exp(-0.5 * (X - M4)'*inv(S4)*(X - M4));
+        f2(i,j) = P2*pdf_values3 + (1-P2)*pdf_values4;
+        
+        h(i,j) = - log(f1(i,j)) + log(f2(i,j));
+        
+    end
+end
+
+
+e_metod2 = [0;0];
+
+for i=1:length(K1)
+    X = K1(:,i);
+    pdf_values1 = 1 / (2 * pi * sqrt(det(S1))) * exp(-0.5 * (X - M1)'*inv(S1)*(X - M1));
+    pdf_values2 = (1 / (2 * pi * sqrt(det(S2)))) * exp(-0.5 * (X - M2)'*inv(S2)*(X - M2));
+    f1_temp = P1*pdf_values1 + (1-P1)*pdf_values2;
+    pdf_values3 = (1 / (2 * pi * sqrt(det(S3)))) * exp(-0.5 * (X - M3)'*inv(S3)*(X - M3));
+    pdf_values4 = (1 / (2 * pi * sqrt(det(S4)))) * exp(-0.5 * (X - M4)'*inv(S4)*(X - M4));
+    f2_temp = P2*pdf_values3 + (1-P2)*pdf_values4;
+    
+    H1(i) = - log(f1_temp) + log(f2_temp);
+    e_metod2(1) = e_metod2(1) + 1 * (0 < H1(i));
+end
+
+for i=1:length(K2)
+    X = K2(:,i);
+    pdf_values1 = 1 / (2 * pi * sqrt(det(S1))) * exp(-0.5 * (X - M1)'*inv(S1)*(X - M1));
+    pdf_values2 = (1 / (2 * pi * sqrt(det(S2)))) * exp(-0.5 * (X - M2)'*inv(S2)*(X - M2));
+    f1_temp = P1*pdf_values1 + (1-P1)*pdf_values2;
+    pdf_values3 = (1 / (2 * pi * sqrt(det(S3)))) * exp(-0.5 * (X - M3)'*inv(S3)*(X - M3));
+    pdf_values4 = (1 / (2 * pi * sqrt(det(S4)))) * exp(-0.5 * (X - M4)'*inv(S4)*(X - M4));
+    f2_temp = P2*pdf_values3 + (1-P2)*pdf_values4;
+    
+    H2(i) = - log(f1_temp) + log(f2_temp); % Wald's Sequential Test
+    e_metod2(2) = e_metod2(2) + 1 * (0 > H2(i));
+end
+e_metod2 = e_metod2/N;
+
+display(sprintf(['Metod:\t' 'Greška prvog tipa' '\tGreška drugog tipa']))
+display(['Teorijski:  ' num2str(e_metod1')])
+display(['Empirijski: ' num2str(e_metod2')])
+%% Test minimalne cene
+C11 = 0; C22 = 0;
+C21 = 1; C12 = 5;
+T = - log((C12 - C22) / (C21 - C11)) ;
+
+figure(9)
+contour(x,y,h',[T T], 'mREPLACE_WITH_DASH_DASH')
+legend('K1','K2','Bayes','Test minimalne cene');
+
+%% Constant False Alarm Ratio
+% Neuman-Pearson test
+% e2 = e0 jer je e0 vec minimalna greska, nadamo se da ce ovaj uslov imati
+% posledicu e1 -> 0
+
+e0 = sum(e_metod1);
+e2 = e0;
+
+Nmi = 100*N;
+pom = rand(1,Nmi); 
+K2_temp = (pom<=P2).*mvnrnd(M3,S3,Nmi)' + (pom>P2).*mvnrnd(M4,S4,Nmi)';
+
+for i=1:Nmi
+    X = K2_temp(:,i);
+    pdf_values1 = 1 / (2 * pi * sqrt(det(S1))) * exp(-0.5 * (X - M1)'*inv(S1)*(X - M1));
+    pdf_values2 = 1 / (2 * pi * sqrt(det(S2))) * exp(-0.5 * (X - M2)'*inv(S2)*(X - M2));
+    f1_mi = P1*pdf_values1 + (1-P1)*pdf_values2;
+    pdf_values3 = 1 / (2 * pi * sqrt(det(S3))) * exp(-0.5 * (X - M3)'*inv(S3)*(X - M3));
+    pdf_values4 = 1 / (2 * pi * sqrt(det(S4))) * exp(-0.5 * (X - M4)'*inv(S4)*(X - M4));
+    f2_mi = P2*pdf_values3 + (1-P2)*pdf_values4;
+    
+    h_mi(i) = - log(f1_mi) + log(f2_mi);
+end
+
+
+h_mi = sort(h_mi);
+mi = exp(-h_mi(round(e0*Nmi)));
+
+T = -log(mi);
+
+figure(9)
+contour(x,y,h',[T T], 'g:')
+legend('K1','K2','Bayes','Test minimalne cene','CFAR');
+
+%% Wald
+e = [1e-100, 1e-50];
+a = -log ((1 - e(1))/e(2)); b = -log(e(1)/(1-e(2)));
+
+seq1_len = [];
+seq2_len = [];
+figure; hold all;
+for i = 1:100
+    [Seq1, Seq2] = my_wald(H1(randperm(N)), H2(randperm(N)), a, b);
+
+    plot(Seq1, 'r');
+    plot(Seq2, 'b');
+    
+    seq1_len = [seq1_len length(Seq1)];
+    seq2_len = [seq2_len length(Seq2)];
+end
+
+plot([0, max([seq1_len seq2_len])], [a, a], 'kREPLACE_WITH_DASH_DASH'); 
+plot([0, max([seq1_len seq2_len])], [b, b], 'kREPLACE_WITH_DASH_DASH');
+
+hold off;
+xlabel('Broj odbiraka');
+title('Sekvencijalni Wald test');
+legend('K1', 'K2', 'Location', 'best');
+
+Ehw1 = sum(sum(step^2*f1.*h));
+Ehw2 = sum(sum(step^2*f2.*h));
+
+Esw1 = a*(1-e(1))+b*e(1);
+Esw2 = b*(1-e(2))+a*e(2);
+
+Em1 = Esw1/Ehw1; Em2 = Esw2/Ehw2;
+
+display('Teorijski')
+display(sprintf('Srednja sekvenca w1: %d\nSrednja sekvenca w2: %d', Em1, Em2));
+display('Empirijski')
+display(sprintf('Srednja sekvenca w1: %d\nSrednja sekvenca w2: %d', mean(seq1_len), mean(seq2_len)));
+
+%% Broj potrebnih odbiraka Waldovog testa u zavisnosti od greške prvog i drugog tipa
+
+E1 = logspace(-1, -100, 100); E2 = logspace(-1, -100, 100); 
+
+Em1 = zeros(size(E1)); Em2 = zeros(size(E2));
+
+cnt1 = 0;
+for e1 = E1
+    cnt1 = cnt1 + 1;
+    cnt2 = 0;
+    for e2 = E2
+        cnt2 = cnt2 + 1;
+        a = -log ((1 - e(1))/e(2)); b = -log(e(1)/(1-e(2)));
+
+        Ehw1 = sum(sum(step^2*f1.*h));
+        Ehw2 = sum(sum(step^2*f2.*h));
+        
+        Esw1 = a*(1-e1)+b*e1;
+        Esw2 = b*(1-e2)+a*e2;
+
+        Em1(cnt1, cnt2) = Esw1/Ehw1; Em2(cnt1, cnt2) = Esw2/Ehw2;
+    end
+end
+
+%%
+figure
+sgtitle('Uslovno očekivanje za neophodan broj odbiraka')
+subplot(1, 2, 1);
+surf(E1, E2, Em1, 'EdgeColor', 'none');
+xlabel('\epsilon_1');
+ylabel('\epsilon_2');
+zlabel('$E\{m|\omega\}$', 'Interpreter', 'latex');
+title('K1');
+
+set(gca, 'XScale', 'log');
+set(gca, 'YScale', 'log');
+
+subplot(1, 2, 2);
+surf(E1, E2, Em2, 'EdgeColor', 'none');
+xlabel('\epsilon_1');
+ylabel('\epsilon_2');
+zlabel('$E\{m|\omega\}$', 'Interpreter', 'latex');
+title('K2');
+
+set(gca, 'XScale', 'log');
+set(gca, 'YScale', 'log');
+
+
+
+
+%% Pojedinačni Wald test za ceo skup
+function [Seq1, Seq2] = my_wald(H1, H2, a, b)
+    Sm = 0; Seq1 = [];
+    for h1 = H1
+        Sm = Sm + h1;
+        Seq1 = [Seq1 Sm];
+        if Sm < a
+            break
+        end
+    end
+    Sm = 0; Seq2 = [];
+    for h2 = H2
+        Sm = Sm + h2;
+        Seq2 = [Seq2 Sm];
+        if Sm > b
+            break
+        end
+    end
+end
+
+
+
+
+##### SOURCE END #####
+--></body></html>
